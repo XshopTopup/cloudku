@@ -379,24 +379,30 @@
             
             xhr.addEventListener('load', () => {
                 if (xhr.status === 200) {
+                    progressStatus.textContent = '✅ Upload berhasil!';
+                    
                     try {
-                        // Coba parse sebagai JSON dulu (jika dari API)
                         const response = JSON.parse(xhr.responseText);
+                        console.log('Response:', response); // Debug log
+                        
                         if (response.status === 'success') {
+                            // Tampilkan hasil upload
                             showResult({
-                                filename: response.filename || response.originalName,
+                                filename: response.filename,
                                 originalName: response.originalName,
                                 url: response.url
                             });
-                            showToast('Berhasil!', 'success');
+                            showToast('Upload berhasil!', 'success');
                         } else {
                             showToast(response.message || 'Upload gagal', 'error');
                             resetForm();
                         }
                     } catch (e) {
-                        // Jika bukan JSON, berarti halaman HTML (reload)
-                        // Ini berarti sukses dari form biasa
-                        showToast('Berhasil!', 'success');
+                        console.error('Parse error:', e);
+                        console.log('Response text:', xhr.responseText); // Debug log
+                        // Jika bukan JSON berarti HTML response (form biasa)
+                        // Reload untuk menampilkan hasil dari server
+                        showToast('Upload berhasil! Memuat ulang...', 'success');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -417,12 +423,21 @@
         });
 
         function showResult(data) {
+            console.log('Showing result:', data); // Debug log
+            
+            // Sembunyikan form
             uploadForm.style.display = 'none';
             progressContainer.classList.remove('show');
+            
+            // Tampilkan hasil
             resFileName.textContent = data.originalName || data.filename;
             resUrlText.textContent = data.url;
             viewFileBtn.href = data.url;
+            
+            // Set copy button
             copyBtn.onclick = () => copyUrl(data.url);
+            
+            // Show result container
             resultContainer.style.display = 'block';
         }
 
@@ -438,6 +453,8 @@
         function copyUrl(url) {
             navigator.clipboard.writeText(url).then(() => {
                 showToast('URL disalin!', 'success');
+            }).catch(() => {
+                showToast('Gagal menyalin URL', 'error');
             });
         }
 
