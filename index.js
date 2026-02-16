@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const { uploadToCloudKu } = require('./CloudKu');
 
 const app = express();
+app.set('trust proxy', true);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -197,7 +198,9 @@ async function processUpload(file, req) {
     // Generate unique filename dan simpan ke database
     while (!success && attempts < maxAttempts) {
         customFilename = `${generateRandomString(6)}${fileExt}`;
-        publicUrl = `${req.protocol}://${req.get('host')}/f/${customFilename}`;
+       // publicUrl = `${req.protocol}://${req.get('host')}/f/${customFilename}`;
+        publicUrl = `https://${req.get('host')}/f/${customFilename}`;
+        
 
         try {
             await db.execute({
