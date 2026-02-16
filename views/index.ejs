@@ -214,23 +214,6 @@
         .footer-link { color: #2ecc71; text-decoration: none; font-size: 14px; font-weight: 600; }
         .footer-text { font-size: 12px; color: rgba(236, 240, 241, 0.3); margin-top: 8px; }
 
-        /* TOAST */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2ecc71;
-            color: #0b1a14;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 14px;
-            display: none;
-            z-index: 1000;
-        }
-        .toast.show { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
     </style>
 </head>
 <body>
@@ -286,8 +269,6 @@
     </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
@@ -313,7 +294,7 @@
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const file = fileInput.files[0];
-        if (!file) { showToast('Pilih file dulu!'); return; }
+        if (!file) return;
 
         const formData = new FormData();
         formData.append('file', file);
@@ -337,11 +318,11 @@
                     const url = response.url || response.fileUrl || response.secure_url || (response.data && response.data.url);
                     showResult({ url: url });
                 } catch (e) {
-                    showToast('Gagal memproses respon server');
+                    console.error('Error parsing response');
                 }
             } else {
-                showToast('Upload Gagal!');
                 uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload Gagal, Coba Lagi';
             }
         });
 
@@ -359,16 +340,8 @@
         navigator.clipboard.writeText(resUrlText.textContent);
         const originalText = copyBtn.textContent;
         copyBtn.textContent = 'Copied!';
-        showToast('URL disalin ke clipboard');
         setTimeout(() => copyBtn.textContent = originalText, 2000);
     };
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
 </script>
 </body>
 </html>
