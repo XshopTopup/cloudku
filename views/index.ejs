@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudKu CDN Uploader - Upload File Gratis</title>
+    <title>CloudKu CDN Uploader</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
     <style>
         * {
@@ -252,7 +252,7 @@
     <div class="container">
         <div class="header">
             <h1>CloudKu CDN</h1>
-            <p>Upload File Profesional & Elegan</p>
+            <p>Upload File Gratis & Permanen</p>
         </div>
         
         <form id="uploadForm" enctype="multipart/form-data">
@@ -298,7 +298,7 @@
         
         <div class="footer">
             <a href="/docs" class="footer-link">📖 API Documentation</a>
-            <div class="footer-text">© 2026 CloudKu CDN • Developed with Arsyilla AI</div>
+            <div class="footer-text">© CloudKu CDN • Uploader All Files</div>
         </div>
     </div>
     
@@ -355,6 +355,7 @@
             uploadBtn.disabled = true;
             btnText.textContent = 'Uploading...';
             progressContainer.classList.add('show');
+            progressStatus.textContent = 'Mengirim file ke server...';
             
             const xhr = new XMLHttpRequest();
             
@@ -363,39 +364,53 @@
                     const percent = Math.round((e.loaded / e.total) * 100);
                     progressBar.style.width = percent + '%';
                     progressBar.textContent = percent + '%';
-                    progressStatus.textContent = 'Mengunggah ke server...';
+                    
+                    if (percent < 30) {
+                        progressStatus.textContent = 'Mengirim file ke CloudKu CDN...';
+                    } else if (percent < 70) {
+                        progressStatus.textContent = 'Uploading ke server...';
+                    } else if (percent < 100) {
+                        progressStatus.textContent = 'Hampir selesai...';
+                    } else {
+                        progressStatus.textContent = 'Memproses file...';
+                    }
                 }
             });
             
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    // Cek jika status sukses (200)
-                    if (xhr.status === 200) {
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            if (response.status === 'success') {
-                                showResult(response.data);
-                                showToast('Berhasil!', 'success');
-                            } else {
-                                throw new Error(response.message || 'Server menolak request');
-                            }
-                        } catch (err) {
-                            showToast('Gagal memproses data server: ' + err.message, 'error');
-                            console.error('Parsing Error:', xhr.responseText);
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    try {
+                        // Coba parse sebagai JSON dulu (jika dari API)
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.status === 'success') {
+                            showResult({
+                                filename: response.filename || response.originalName,
+                                originalName: response.originalName,
+                                url: response.url
+                            });
+                            showToast('Berhasil!', 'success');
+                        } else {
+                            showToast(response.message || 'Upload gagal', 'error');
                             resetForm();
                         }
-                    } else {
-                        // Jika status bukan 200 (error 404, 500, dll)
-                        showToast('Error Server (' + xhr.status + ')', 'error');
-                        resetForm();
+                    } catch (e) {
+                        // Jika bukan JSON, berarti halaman HTML (reload)
+                        // Ini berarti sukses dari form biasa
+                        showToast('Berhasil!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     }
+                } else {
+                    showToast('Error Server (' + xhr.status + ')', 'error');
+                    resetForm();
                 }
-            };
+            });
             
-            xhr.onerror = function() {
+            xhr.addEventListener('error', () => {
                 showToast('Koneksi terputus atau gagal!', 'error');
                 resetForm();
-            };
+            });
             
             xhr.open('POST', '/upload', true);
             xhr.send(formData);
@@ -404,7 +419,7 @@
         function showResult(data) {
             uploadForm.style.display = 'none';
             progressContainer.classList.remove('show');
-            resFileName.textContent = data.filename || data.originalName;
+            resFileName.textContent = data.originalName || data.filename;
             resUrlText.textContent = data.url;
             viewFileBtn.href = data.url;
             copyBtn.onclick = () => copyUrl(data.url);
@@ -415,6 +430,9 @@
             uploadBtn.disabled = false;
             btnText.textContent = 'Upload File Sekarang';
             progressContainer.classList.remove('show');
+            progressBar.style.width = '0%';
+            progressBar.textContent = '0%';
+            progressStatus.textContent = 'Ready to upload...';
         }
 
         function copyUrl(url) {
