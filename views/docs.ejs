@@ -3,205 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation - CloudKu CDN</title>
+    <title>API Integration - CloudKu CDN</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
     <style>
+        /* ... Style CSS tetap sama seperti sebelumnya ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            padding: 40px 20px;
+            background-color: #0b1a14;
+            background-image: radial-gradient(rgba(46, 204, 113, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+            min-height: 100vh;
+            padding: 60px 20px;
+            color: #ecf0f1;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        
+        .content-wrapper { width: 100%; max-width: 850px; margin: 0 auto; animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .header { margin-bottom: 50px; border-bottom: 1px solid rgba(46, 204, 113, 0.2); padding-bottom: 30px; text-align: center; }
+        .header h1 { color: #2ecc71; font-size: 38px; margin-bottom: 10px; font-weight: 800; }
+        .header p { color: rgba(236, 240, 241, 0.6); font-size: 18px; }
+
+        .endpoint-container { display: flex; justify-content: center; width: 100%; margin-bottom: 30px; }
+        .endpoint-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(46, 204, 113, 0.1);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            backdrop-filter: blur(5px);
         }
-        h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        h2 {
-            color: #667eea;
-            margin: 30px 0 15px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-        }
-        h3 {
-            color: #764ba2;
-            margin: 20px 0 10px;
-        }
+
+        .method { background: #2ecc71; color: #0b1a14; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 14px; margin-right: 15px; }
+        code.url { color: #2ecc71; font-family: 'Fira Code', monospace; font-weight: 600; }
+
+        h2 { color: #2ecc71; margin: 40px 0 20px; font-size: 24px; border-left: 4px solid #2ecc71; padding-left: 15px; }
+        p { margin-bottom: 20px; color: rgba(236, 240, 241, 0.8); }
+
+        /* Style untuk Code Block & Copy Button */
+        .code-block-wrapper { position: relative; margin: 20px 0; }
         pre {
-            background: #2d2d2d;
-            color: #f8f8f8;
-            padding: 20px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #e0e0e0;
+            padding: 25px;
+            border-radius: 12px;
             overflow-x: auto;
-            margin: 15px 0;
+            border: 1px solid rgba(46, 204, 113, 0.15);
+            font-size: 14px;
         }
-        code {
-            font-family: 'Courier New', monospace;
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
         }
-        .endpoint {
-            background: #f0f9ff;
-            padding: 15px;
-            border-left: 4px solid #667eea;
-            margin: 15px 0;
-            border-radius: 5px;
-        }
-        .method {
-            display: inline-block;
-            padding: 5px 15px;
-            background: #667eea;
-            color: white;
-            border-radius: 5px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
+        .copy-btn:hover { background: #2ecc71; color: #0b1a14; }
+
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 25px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(46, 204, 113, 0.1);
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #667eea;
-            color: white;
+
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(46, 204, 113, 0.05); }
+        th { background: rgba(46, 204, 113, 0.1); color: #2ecc71; font-size: 13px; text-transform: uppercase; }
+
+        .status-code { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-bottom: 10px; }
+        .status-200 { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .status-400 { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+        footer { margin-top: 50px; width: 100%; text-align: center; border-top: 1px solid rgba(46, 204, 113, 0.1); padding-top: 30px; }
+        .back-link { display: inline-flex; align-items: center; color: #2ecc71; text-decoration: none; font-weight: 600; transition: 0.3s; gap: 10px; margin-bottom: 20px; }
+        .back-link:hover { transform: translateX(-5px); }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 30px; }
+            .endpoint-badge { flex-direction: column; text-align: center; gap: 10px; }
+            .method { margin-right: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📖 API Documentation</h1>
-        <p>Dokumentasi lengkap untuk menggunakan CloudKu CDN Uploader API</p>
+    <div class="content-wrapper">
+        <header class="header">
+            <h1>API Integration</h1>
+            <p></p>
+        </header>
 
-        <h2>🚀 Upload File</h2>
-        <div class="endpoint">
-            <span class="method">POST</span>
-            <code>/cdn/api.php</code>
+        <div class="endpoint-container">
+            <div class="endpoint-badge">
+                <span class="method">POST</span>
+                <code class="url" id="base-url-display">loading...</code>
+            </div>
         </div>
 
-        <h3>Request</h3>
-        <p><strong>Content-Type:</strong> multipart/form-data</p>
-        <p><strong>Body Parameters:</strong></p>
-        <table>
-            <tr>
-                <th>Parameter</th>
-                <th>Type</th>
-                <th>Required</th>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td>file</td>
-                <td>File</td>
-                <td>Yes</td>
-                <td>File yang akan diupload (max 200MB)</td>
-            </tr>
-        </table>
+        <section>
+            <h2>Parameter Request</h2>
+            <p>Kirimkan file Anda menggunakan metode POST dengan format <code>multipart/form-data</code>.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Tipe</th>
+                        <th>Wajib</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>file</code></td>
+                        <td>Binary</td>
+                        <td>Ya</td>
+                        <td>File gambar, dokumen, atau video (Maks 200MB).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 
-        <h3>cURL Example</h3>
-        <pre><code>curl -X POST http://localhost:3000/cdn/api.php \
-  -F "file=@/path/to/your/file.png"</code></pre>
-
-        <h3>JavaScript Example</h3>
-        <pre><code>const formData = new FormData();
+        <section>
+            <h2>Contoh Implementasi</h2>
+            
+            <h3>JavaScript</h3>
+            <div class="code-block-wrapper">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code id="js-code">const formData = new FormData();
 formData.append('file', fileInput.files[0]);
 
-const response = await fetch('/cdn/api.php', {
-  method: 'POST',
-  body: formData
-});
+fetch('[BASE_URL]/cdn/api.php', {
+    method: 'POST',
+    body: formData
+})
+.then(res => res.json())
+.then(data => console.log(data));</code></pre>
+            </div>
 
-const result = await response.json();
-console.log(result);</code></pre>
+            <h3>PHP (cURL)</h3>
+            <div class="code-block-wrapper">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code id="php-code">$file = new CURLFile('image.jpg');
+$ch = curl_init('[BASE_URL]/cdn/api.php');
+curl_setopt($ch, CURLOPT_POSTFIELDS, ['file' => $file]);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+echo $response;</code></pre>
+            </div>
+        </section>
 
-        <h3>Success Response (200)</h3>
-        <pre><code>{
+        <section>
+            <h2>Respon Server</h2>
+            
+            <span class="status-code status-200">200 OK - Success</span>
+            <div class="code-block-wrapper">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code>{
   "status": "success",
-  "url": "http://localhost:3000/f/abc123.jpg",
-  "cloudKuUrl": "https://domain-kamu.com/f/xyz789.jpg",
-  "filename": "abc123.jpg",
-  "originalName": "foto_liburan.jpg"
+  "url": "[BASE_URL]/f/custom123.jpg",
+  "filename": "custom123.jpg",
+  "originalName": "foto.jpg"
 }</code></pre>
+            </div>
 
-        <h3>Error Responses</h3>
-        <p><strong>400 Bad Request - No file provided</strong></p>
-        <pre><code>{
-  "status": "error",
-  "message": "No file provided"
-}</code></pre>
-
-        <p><strong>400 Bad Request - File too large</strong></p>
-        <pre><code>{
+            <span class="status-code status-400">400 Error - Failed</span>
+            <div class="code-block-wrapper">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code>{
   "status": "error",
   "message": "Upload limit exceeded (200MB max)"
 }</code></pre>
+            </div>
+        </section>
 
-        <p><strong>500 Internal Server Error</strong></p>
-        <pre><code>{
-  "status": "error",
-  "message": "CloudKu CDN upload failed: [Error message]"
-}</code></pre>
-
-        <h2>📁 Get File Info</h2>
-        <div class="endpoint">
-            <span class="method">GET</span>
-            <code>/api/file/:filename</code>
-        </div>
-
-        <h3>Success Response (200)</h3>
-        <pre><code>{
-  "status": "success",
-  "data": {
-    "filename": "abc123.jpg",
-    "originalName": "foto_liburan.jpg",
-    "size": 1048576,
-    "mimetype": "image/jpeg",
-    "uploadDate": "2024-01-15 10:30:00",
-    "publicUrl": "http://localhost:3000/f/abc123.jpg",
-    "cloudKuUrl": "https://domain-kamu.com/f/xyz789.jpg"
-  }
-}</code></pre>
-
-        <h2>🗑️ Delete File</h2>
-        <div class="endpoint">
-            <span class="method">DELETE</span>
-            <code>/api/file/:filename</code>
-        </div>
-
-        <h3>Success Response (200)</h3>
-        <pre><code>{
-  "status": "success",
-  "message": "File deleted successfully"
-}</code></pre>
-
-        <h2>🔗 Access File</h2>
-        <div class="endpoint">
-            <span class="method">GET</span>
-            <code>/f/:filename</code>
-        </div>
-        <p>Akses file langsung melalui URL custom domain Anda. File akan di-proxy dari CloudKu CDN.</p>
-
-        <h3>Example</h3>
-        <pre><code>http://localhost:3000/f/abc123.jpg</code></pre>
-
-        <a href="/" class="back-link">← Kembali ke Home</a>
+        <footer>
+            <a href="/" class="back-link">
+                <span>←</span> Kembali ke Dashboard
+            </a>
+            <p style="font-size: 13px; color: rgba(236, 240, 241, 0.3);">
+                Dokumentasi API CloudKu CDN
+            </p>
+        </footer>
     </div>
+
+    <script>
+        // Deteksi domain otomatis
+        const currentOrigin = window.location.origin;
+        const apiPath = "/cdn/api.php";
+        
+        // Update tampilan URL utama
+        document.getElementById('base-url-display').innerText = currentOrigin + apiPath;
+
+        // Ganti semua placeholder [BASE_URL] di dalam halaman
+        document.body.innerHTML = document.body.innerHTML.replace(/\[BASE_URL\]/g, currentOrigin);
+
+        // Fungsi Copy Code
+        function copyCode(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = "Copied!";
+                button.style.background = "#2ecc71";
+                button.style.color = "#0b1a14";
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.background = "rgba(46, 204, 113, 0.2)";
+                    button.style.color = "#2ecc71";
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
