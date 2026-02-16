@@ -6,17 +6,13 @@
     <title>CloudKu CDN Uploader</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
             background-color: #0b1a14;
-            background-image: radial-gradient(rgba(46, 204, 113, 0.15) 1px, transparent 1px);
-            background-size: 24px 24px;
+            background-image: radial-gradient(rgba(46, 204, 113, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,525 +20,355 @@
             padding: 20px;
             color: #ecf0f1;
         }
-        
+
         .container {
-            max-width: 700px;
+            max-width: 600px;
             width: 100%;
-            animation: fadeIn 0.5s ease-in;
-            padding: 20px;
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
-        
+
         .header h1 {
             color: #2ecc71;
-            margin-bottom: 10px;
-            font-size: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-weight: 700;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-size: 48px;
+            letter-spacing: -1px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
         }
-        
+
         .header p {
-            color: rgba(236, 240, 241, 0.7);
-            font-size: 18px;
-            font-weight: 500;
+            color: rgba(236, 240, 241, 0.6);
+            font-size: 16px;
+            font-weight: 400;
         }
-        
+
+        /* UPLOAD AREA */
         .upload-area {
-            border: 2px dashed rgba(46, 204, 113, 0.4);
-            border-radius: 16px;
-            padding: 80px 30px;
+            border: 2px dashed rgba(46, 204, 113, 0.2);
+            border-radius: 20px;
+            padding: 60px 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(5px);
+            background: rgba(46, 204, 113, 0.02);
         }
-        
+
         .upload-area:hover {
             background: rgba(46, 204, 113, 0.05);
             border-color: #2ecc71;
-            transform: translateY(-2px);
         }
-        
-        .upload-area.dragging {
-            background: rgba(46, 204, 113, 0.1);
-            border-color: #27ae60;
-        }
-        
-        .upload-text {
-            font-size: 22px;
-            color: #ecf0f1;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .upload-subtext {
-            font-size: 15px;
-            color: rgba(236, 240, 241, 0.5);
-        }
-        
-        input[type="file"] {
-            display: none;
-        }
-        
-        .file-info {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            display: none;
-            border: 1px solid rgba(46, 204, 113, 0.3);
-            border-left: 5px solid #2ecc71;
-        }
-        
+
+        .upload-text { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+        .upload-subtext { font-size: 14px; color: rgba(236, 240, 241, 0.4); }
+
+        input[type="file"] { display: none; }
+
+        /* PROGRESS & INFO */
+        .file-info { margin-top: 20px; text-align: center; display: none; }
         .file-info.show { display: block; }
-        
-        .file-name { font-weight: 600; color: #fff; margin-bottom: 5px; }
-        .file-size { font-size: 14px; color: rgba(236, 240, 241, 0.6); }
-        
-        .progress-container { margin: 20px 0; display: none; }
+        .file-name-preview { color: #2ecc71; font-weight: 600; font-size: 14px; }
+
+        .progress-container { margin-top: 20px; display: none; }
         .progress-container.show { display: block; }
-        
         .progress-bar-wrapper {
             width: 100%;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
             overflow: hidden;
-            border: 1px solid rgba(46, 204, 113, 0.2);
         }
-        
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            background: #2ecc71;
             width: 0%;
             transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0b1a14;
-            font-weight: bold;
-            font-size: 13px;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
         }
-        
-        .progress-status { margin-top: 10px; text-align: center; color: #2ecc71; font-size: 14px; }
-        
+
+        /* BUTTONS */
         .btn {
             background: #2ecc71;
             color: #0b1a14;
-            padding: 16px 35px;
+            padding: 18px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 700;
             width: 100%;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-        }
-        
-        .btn:hover:not(:disabled) {
-            background: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
-        }
-        
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .result {
-            margin-top: 30px;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            border: 1px solid rgba(46, 204, 113, 0.3);
-            backdrop-filter: blur(10px);
-            display: none;
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .result h3 { color: #2ecc71; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        
-        .result-info { background: rgba(0, 0, 0, 0.2); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .result-label { font-size: 12px; color: rgba(236, 240, 241, 0.5); text-transform: uppercase; margin-bottom: 5px; }
-        .result-value { font-size: 14px; color: #fff; font-weight: 600; }
-        
-        .url-box {
-            background: #fff;
-            padding: 12px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .url-text { flex: 1; word-break: break-all; font-size: 14px; color: #1e8449; font-weight: 600; }
-        
-        .copy-btn {
-            background: #0b1a14;
-            color: #2ecc71;
-            border: 1px solid #2ecc71;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+            margin-top: 25px;
             transition: 0.3s;
+        }
+
+        .btn:hover:not(:disabled) { background: #27ae60; transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; }
+
+        /* RESULT SECTION (Seamless) */
+        .result {
+            margin-top: 10px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-badge {
+            color: #2ecc71;
+            text-align: center;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .label-text {
+            display: block;
+            font-size: 12px;
+            color: rgba(236, 240, 241, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .url-display {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .url-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: monospace;
+            color: #2ecc71;
             font-size: 14px;
         }
-        
-        .copy-btn:hover { background: #2ecc71; color: #0b1a14; }
-        .copy-btn.copied { background: #2ecc71; color: #0b1a14; }
-        
-        .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        
-        .action-btn {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #2ecc71;
-            background: transparent;
-            color: #2ecc71;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: 0.3s;
-        }
-        
-        .action-btn:hover { background: rgba(46, 204, 113, 0.1); transform: translateY(-2px); }
-        
-        .footer {
-            margin-top: 40px;
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(46, 204, 113, 0.2);
-        }
-        
-        .footer-link { color: #2ecc71; text-decoration: none; font-weight: 600; opacity: 0.8; }
-        .footer-link:hover { opacity: 1; text-decoration: underline; }
-        .footer-text { font-size: 13px; color: rgba(236, 240, 241, 0.4); margin-top: 10px; }
-        
-        .toast {
-            position: fixed; top: 20px; right: 20px; background: #2ecc71; color: #0b1a14;
-            padding: 15px 25px; border-radius: 10px; display: none; z-index: 1000; font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .toast.show { display: block; animation: toastIn 0.3s ease-out; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
 
-        @media (max-width: 768px) {
-            .header h1 { font-size: 32px; }
-            .action-buttons { flex-direction: column; }
-            .url-box { flex-direction: column; align-items: stretch; }
-            .copy-btn { width: 100%; }
+        .copy-action {
+            background: #2ecc71;
+            color: #0b1a14;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
         }
+
+        .copy-action:hover { background: #27ae60; }
+
+        .action-links {
+            margin-top: 25px;
+        }
+
+        .sec-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid rgba(46, 204, 113, 0.4);
+            color: #2ecc71;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .sec-btn:hover {
+            background: rgba(46, 204, 113, 0.1);
+            border-color: #2ecc71;
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 30px;
+        }
+        .footer-link { color: #2ecc71; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .footer-text { font-size: 12px; color: rgba(236, 240, 241, 0.3); margin-top: 8px; }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2ecc71;
+            color: #0b1a14;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            display: none;
+            z-index: 1000;
+        }
+        .toast.show { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>CloudKu CDN</h1>
-            <p>Upload File Gratis & Permanen</p>
-        </div>
-        
-        <form id="uploadForm" enctype="multipart/form-data">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-text">Select or drop files</div>
-                <div class="upload-subtext">Mendukung file hingga 200 MB</div>
-            </div>
-            
-            <input type="file" id="fileInput" name="file" required>
-            
-            <div class="file-info" id="fileInfo">
-                <div class="file-name" id="fileName"></div>
-                <div class="file-size" id="fileSize"></div>
-            </div>
-            
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar-wrapper">
-                    <div class="progress-bar" id="progressBar">0%</div>
-                </div>
-                <div class="progress-status" id="progressStatus">Ready to upload...</div>
-            </div>
-            
-            <button type="submit" class="btn" id="uploadBtn">
-                <span id="btnText">Upload File Sekarang</span>
-            </button>
-        </form>
 
-        <div class="result" id="resultContainer">
-            <h3>✅ Berhasil Diunggah!</h3>
-            <div class="result-info">
-                <div class="result-label">File Name</div>
-                <div class="result-value" id="resFileName">-</div>
-            </div>
-            <div class="result-label" style="margin-bottom: 8px;">URL Public</div>
-            <div class="url-box">
-                <span class="url-text" id="resUrlText">-</span>
-                <button class="copy-btn" id="copyBtn">📋 Copy</button>
-            </div>
-            <div class="action-buttons">
-                <a href="#" id="viewFileBtn" target="_blank" class="action-btn">👁️ Lihat File</a>
-                <button onclick="location.reload()" class="action-btn">🔄 Upload Lagi</button>
+<div class="container">
+    <div class="header">
+        <h1>CloudKu CDN</h1>
+        <p>Upload File Gratis & Permanen</p>
+    </div>
+
+    <form id="uploadForm">
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-text">Select or drop files</div>
+            <div class="upload-subtext">Mendukung file hingga 200 MB</div>
+        </div>
+        <input type="file" id="fileInput" name="file">
+        
+        <div class="file-info" id="fileInfo">
+            <span class="file-name-preview" id="fileNamePreview"></span>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
         </div>
-        
-        <div class="footer">
-            <a href="/docs" class="footer-link">📖 API Documentation</a>
-            <div class="footer-text">© CloudKu CDN • Uploader All Files</div>
+
+        <button type="submit" class="btn" id="uploadBtn">Upload File Sekarang</button>
+    </form>
+
+    <div class="result" id="resultContainer">
+        <div class="success-badge">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Berhasil Diunggah!
+        </div>
+
+        <div class="input-group">
+            <span class="label-text">Public URL</span>
+            <div class="url-display">
+                <span class="url-text" id="resUrlText">-</span>
+                <button class="copy-action" id="copyBtn">Copy</button>
+            </div>
+        </div>
+
+        <div class="action-links">
+            <button onclick="location.reload()" class="sec-btn">Upload File</button>
         </div>
     </div>
-    
-    <div class="toast" id="toast"></div>
 
-    <script>
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const uploadForm = document.getElementById('uploadForm');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const btnText = document.getElementById('btnText');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressStatus = document.getElementById('progressStatus');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const resultContainer = document.getElementById('resultContainer');
-        const resFileName = document.getElementById('resFileName');
-        const resUrlText = document.getElementById('resUrlText');
-        const viewFileBtn = document.getElementById('viewFileBtn');
-        const copyBtn = document.getElementById('copyBtn');
+    <div class="footer">
+        <a href="/docs" class="footer-link">📖 API Documentation</a>
+        <div class="footer-text">© 2026 CloudKu CDN • All Files Secured</div>
+    </div>
+</div>
 
-        // Click to upload
-        uploadArea.addEventListener('click', () => fileInput.click());
+<div class="toast" id="toast"></div>
 
-        // File selected
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) displayFileInfo(file);
-        });
+<script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNamePreview = document.getElementById('fileNamePreview');
+    const resultContainer = document.getElementById('resultContainer');
+    const resUrlText = document.getElementById('resUrlText');
+    const copyBtn = document.getElementById('copyBtn');
 
-        // Drag & Drop
-        uploadArea.addEventListener('dragover', (e) => { 
-            e.preventDefault(); 
-            uploadArea.classList.add('dragging'); 
-        });
-        
-        uploadArea.addEventListener('dragleave', () => { 
-            uploadArea.classList.remove('dragging'); 
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragging');
-            const file = e.dataTransfer.files[0];
-            if (file) { 
-                fileInput.files = e.dataTransfer.files; 
-                displayFileInfo(file); 
-            }
-        });
+    uploadArea.addEventListener('click', () => fileInput.click());
 
-        function displayFileInfo(file) {
-            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-            fileName.textContent = file.name;
-            fileSize.textContent = `${sizeMB} MB`;
+    fileInput.addEventListener('change', (e) => {
+        if(e.target.files[0]) {
+            fileNamePreview.textContent = e.target.files[0].name;
             fileInfo.classList.add('show');
-            resultContainer.style.display = 'none';
         }
+    });
 
-        // Upload form submit
-        uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const file = fileInput.files[0];
-            if (!file) { 
-                showToast('Pilih file dulu!', 'error'); 
-                return; 
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = fileInput.files[0];
+        if (!file) { showToast('Pilih file dulu!'); return; }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Memproses...';
+        progressContainer.classList.add('show');
+
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percent = (e.loaded / e.total) * 100;
+                progressBar.style.width = percent + '%';
             }
-            
-            const formData = new FormData(uploadForm);
-            
-            uploadBtn.disabled = true;
-            btnText.textContent = 'Uploading...';
-            progressContainer.classList.add('show');
-            progressStatus.textContent = 'Mempersiapkan upload...';
-            
-            const xhr = new XMLHttpRequest();
-            
-            // Progress tracking
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBar.style.width = percent + '%';
-                    progressBar.textContent = percent + '%';
-                    
-                    if (percent < 30) {
-                        progressStatus.textContent = 'Mengirim file ke CloudKu CDN...';
-                    } else if (percent < 70) {
-                        progressStatus.textContent = 'Uploading ke server...';
-                    } else if (percent < 100) {
-                        progressStatus.textContent = 'Hampir selesai...';
-                    } else {
-                        progressStatus.textContent = 'Memproses file...';
-                    }
-                }
-            });
-            
-            // Upload complete (PERBAIKAN DILAKUKAN DI BLOK INI)
-            xhr.addEventListener('load', () => {
-                if (xhr.status === 200 || xhr.status === 201) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        console.log('Server response:', response);
-                        
-                        // Ekstraksi URL yang lebih dinamis dari response backend (Express)
-                        const fileUrl = response.url || response.fileUrl || response.secure_url || (response.data && response.data.url);
-                        
-                        if (fileUrl) {
-                            progressStatus.textContent = '✅ Upload berhasil!';
-                            
-                            setTimeout(() => {
-                                showResult({
-                                    filename: response.filename || response.originalName || file.name,
-                                    url: fileUrl
-                                });
-                                showToast('Upload berhasil!', 'success');
-                            }, 500);
-                        } else {
-                            throw new Error(response.message || 'URL gagal diekstrak dari respon server');
-                        }
-                    } catch (e) {
-                        console.error('Parse error:', e);
-                        console.log('Response text:', xhr.responseText);
-                        
-                        // Fallback: Jika server merespon dengan plain text berisi URL
-                        if (xhr.responseText && xhr.responseText.trim().startsWith('http')) {
-                            progressStatus.textContent = '✅ Upload berhasil!';
-                            setTimeout(() => {
-                                showResult({
-                                    filename: file.name,
-                                    url: xhr.responseText.trim()
-                                });
-                                showToast('Upload berhasil!', 'success');
-                            }, 500);
-                        } else {
-                            // Hanya refresh halaman jika benar-benar gagal mendapatkan URL
-                            showToast('Upload diproses! Memuat ulang...', 'success');
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
-                        }
-                    }
-                } else {
-                    showToast('Error Server (' + xhr.status + ')', 'error');
-                    resetForm();
-                }
-            });
-            
-            // Upload error
-            xhr.addEventListener('error', () => {
-                showToast('Koneksi terputus atau gagal!', 'error');
-                resetForm();
-            });
-            
-            xhr.open('POST', '/upload', true);
-            xhr.send(formData);
         });
 
-        function showResult(data) {
-            console.log('Showing result with data:', data);
-            
-            // Pastikan data valid
-            if (!data || !data.url) {
-                console.error('Invalid data:', data);
-                showToast('Data tidak valid!', 'error');
-                resetForm();
-                return;
+        xhr.addEventListener('load', () => {
+            if (xhr.status === 200 || xhr.status === 201) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    const url = response.url || response.fileUrl || response.secure_url || (response.data && response.data.url);
+                    showResult({ url: url });
+                } catch (e) {
+                    showToast('Gagal memproses respon server');
+                }
+            } else {
+                showToast('Upload Gagal!');
+                uploadBtn.disabled = false;
             }
-            
-            // Hide form and progress
-            uploadForm.style.display = 'none';
-            progressContainer.style.display = 'none';
-            
-            // Set result values
-            resFileName.textContent = data.originalName || data.filename || 'Unknown';
-            resUrlText.textContent = data.url;
-            viewFileBtn.href = data.url;
-            
-            // Setup copy button
-            copyBtn.onclick = (e) => {
-                e.preventDefault();
-                copyUrl(data.url);
-            };
-            
-            // Show result container
-            resultContainer.style.display = 'block';
-            
-            console.log('Result displayed successfully');
-        }
+        });
 
-        function resetForm() {
-            uploadBtn.disabled = false;
-            btnText.textContent = 'Upload File Sekarang';
-            progressContainer.classList.remove('show');
-            progressBar.style.width = '0%';
-            progressBar.textContent = '0%';
-            progressStatus.textContent = 'Ready to upload...';
-        }
+        xhr.open('POST', '/upload', true);
+        xhr.send(formData);
+    });
 
-        function copyUrl(url) {
-            if (!url) {
-                showToast('URL tidak tersedia!', 'error');
-                return;
-            }
-            
-            navigator.clipboard.writeText(url).then(() => {
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = '✓ Copied!';
-                copyBtn.classList.add('copied');
-                showToast('URL berhasil disalin!', 'success');
-                
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.classList.remove('copied');
-                }, 2000);
-            }).catch((err) => {
-                console.error('Copy failed:', err);
-                showToast('Gagal menyalin URL', 'error');
-            });
-        }
+    function showResult(data) {
+        uploadForm.style.display = 'none';
+        resultContainer.style.display = 'block';
+        resUrlText.textContent = data.url;
+    }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === 'success' ? '#2ecc71' : '#e74c3c';
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 4000);
-        }
-    </script>
+    copyBtn.onclick = () => {
+        navigator.clipboard.writeText(resUrlText.textContent);
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        showToast('URL disalin ke clipboard');
+        setTimeout(() => copyBtn.textContent = originalText, 2000);
+    };
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+</script>
 </body>
 </html>
