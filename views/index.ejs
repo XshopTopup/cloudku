@@ -171,6 +171,12 @@
             border: 1px solid rgba(46, 204, 113, 0.3);
             backdrop-filter: blur(10px);
             display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .result h3 { color: #2ecc71; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
@@ -201,9 +207,11 @@
             cursor: pointer;
             font-weight: 600;
             transition: 0.3s;
+            font-size: 14px;
         }
         
         .copy-btn:hover { background: #2ecc71; color: #0b1a14; }
+        .copy-btn.copied { background: #2ecc71; color: #0b1a14; }
         
         .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
         
@@ -238,13 +246,16 @@
         .toast {
             position: fixed; top: 20px; right: 20px; background: #2ecc71; color: #0b1a14;
             padding: 15px 25px; border-radius: 10px; display: none; z-index: 1000; font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .toast.show { display: block; animation: toastIn 0.3s ease-out; }
-        @keyframes toastIn { from { transform: translateX(100px); } to { transform: translateX(0); } }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
 
         @media (max-width: 768px) {
             .header h1 { font-size: 32px; }
             .action-buttons { flex-direction: column; }
+            .url-box { flex-direction: column; align-items: stretch; }
+            .copy-btn { width: 100%; }
         }
     </style>
 </head>
@@ -286,13 +297,14 @@
                 <div class="result-label">File Name</div>
                 <div class="result-value" id="resFileName">-</div>
             </div>
+            <div class="result-label" style="margin-bottom: 8px;">URL Public</div>
             <div class="url-box">
                 <span class="url-text" id="resUrlText">-</span>
-                <button class="copy-btn" id="copyBtn">Copy</button>
+                <button class="copy-btn" id="copyBtn">📋 Copy</button>
             </div>
             <div class="action-buttons">
-                <a href="#" id="viewFileBtn" target="_blank" class="action-btn">Lihat File</a>
-                <button onclick="location.reload()" class="action-btn">Upload Lagi</button>
+                <a href="#" id="viewFileBtn" target="_blank" class="action-btn">👁️ Lihat File</a>
+                <button onclick="location.reload()" class="action-btn">🔄 Upload Lagi</button>
             </div>
         </div>
         
@@ -322,20 +334,33 @@
         const viewFileBtn = document.getElementById('viewFileBtn');
         const copyBtn = document.getElementById('copyBtn');
 
+        // Click to upload
         uploadArea.addEventListener('click', () => fileInput.click());
 
+        // File selected
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) displayFileInfo(file);
         });
 
-        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragging'); });
-        uploadArea.addEventListener('dragleave', () => { uploadArea.classList.remove('dragging'); });
+        // Drag & Drop
+        uploadArea.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            uploadArea.classList.add('dragging'); 
+        });
+        
+        uploadArea.addEventListener('dragleave', () => { 
+            uploadArea.classList.remove('dragging'); 
+        });
+        
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragging');
             const file = e.dataTransfer.files[0];
-            if (file) { fileInput.files = e.dataTransfer.files; displayFileInfo(file); }
+            if (file) { 
+                fileInput.files = e.dataTransfer.files; 
+                displayFileInfo(file); 
+            }
         });
 
         function displayFileInfo(file) {
@@ -346,19 +371,26 @@
             resultContainer.style.display = 'none';
         }
 
+        // Upload form submit
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             const file = fileInput.files[0];
-            if (!file) { showToast('Pilih file dulu!', 'error'); return; }
+            if (!file) { 
+                showToast('Pilih file dulu!', 'error'); 
+                return; 
+            }
             
             const formData = new FormData(uploadForm);
+            
             uploadBtn.disabled = true;
             btnText.textContent = 'Uploading...';
             progressContainer.classList.add('show');
-            progressStatus.textContent = 'Mengirim file ke server...';
+            progressStatus.textContent = 'Mempersiapkan upload...';
             
             const xhr = new XMLHttpRequest();
             
+            // Progress tracking
             xhr.upload.addEventListener('progress', (e) => {
                 if (e.lengthComputable) {
                     const percent = Math.round((e.loaded / e.total) * 100);
@@ -377,31 +409,33 @@
                 }
             });
             
+            // Upload complete
             xhr.addEventListener('load', () => {
                 if (xhr.status === 200) {
-                    progressStatus.textContent = '✅ Upload berhasil!';
-                    
                     try {
                         const response = JSON.parse(xhr.responseText);
-                        console.log('Response:', response); // Debug log
+                        console.log('Server response:', response);
                         
-                        if (response.status === 'success') {
-                            // Tampilkan hasil upload
-                            showResult({
-                                filename: response.filename,
-                                originalName: response.originalName,
-                                url: response.url
-                            });
-                            showToast('Upload berhasil!', 'success');
+                        if (response.status === 'success' && response.url) {
+                            // Tampilkan hasil
+                            progressStatus.textContent = '✅ Upload berhasil!';
+                            
+                            setTimeout(() => {
+                                showResult({
+                                    filename: response.filename,
+                                    originalName: response.originalName,
+                                    url: response.url
+                                });
+                                showToast('Upload berhasil!', 'success');
+                            }, 500);
                         } else {
-                            showToast(response.message || 'Upload gagal', 'error');
-                            resetForm();
+                            throw new Error(response.message || 'Response tidak valid');
                         }
                     } catch (e) {
                         console.error('Parse error:', e);
-                        console.log('Response text:', xhr.responseText); // Debug log
-                        // Jika bukan JSON berarti HTML response (form biasa)
-                        // Reload untuk menampilkan hasil dari server
+                        console.log('Response text:', xhr.responseText);
+                        
+                        // Jika bukan JSON, mungkin HTML response
                         showToast('Upload berhasil! Memuat ulang...', 'success');
                         setTimeout(() => {
                             window.location.reload();
@@ -413,6 +447,7 @@
                 }
             });
             
+            // Upload error
             xhr.addEventListener('error', () => {
                 showToast('Koneksi terputus atau gagal!', 'error');
                 resetForm();
@@ -423,22 +458,35 @@
         });
 
         function showResult(data) {
-            console.log('Showing result:', data); // Debug log
+            console.log('Showing result with data:', data);
             
-            // Sembunyikan form
+            // Pastikan data valid
+            if (!data || !data.url) {
+                console.error('Invalid data:', data);
+                showToast('Data tidak valid!', 'error');
+                resetForm();
+                return;
+            }
+            
+            // Hide form and progress
             uploadForm.style.display = 'none';
-            progressContainer.classList.remove('show');
+            progressContainer.style.display = 'none';
             
-            // Tampilkan hasil
-            resFileName.textContent = data.originalName || data.filename;
+            // Set result values
+            resFileName.textContent = data.originalName || data.filename || 'Unknown';
             resUrlText.textContent = data.url;
             viewFileBtn.href = data.url;
             
-            // Set copy button
-            copyBtn.onclick = () => copyUrl(data.url);
+            // Setup copy button
+            copyBtn.onclick = (e) => {
+                e.preventDefault();
+                copyUrl(data.url);
+            };
             
             // Show result container
             resultContainer.style.display = 'block';
+            
+            console.log('Result displayed successfully');
         }
 
         function resetForm() {
@@ -451,9 +499,23 @@
         }
 
         function copyUrl(url) {
+            if (!url) {
+                showToast('URL tidak tersedia!', 'error');
+                return;
+            }
+            
             navigator.clipboard.writeText(url).then(() => {
-                showToast('URL disalin!', 'success');
-            }).catch(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                showToast('URL berhasil disalin!', 'success');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch((err) => {
+                console.error('Copy failed:', err);
                 showToast('Gagal menyalin URL', 'error');
             });
         }
@@ -463,7 +525,10 @@
             toast.textContent = message;
             toast.style.background = type === 'success' ? '#2ecc71' : '#e74c3c';
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 4000);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
         }
     </script>
 </body>
