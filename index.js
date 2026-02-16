@@ -252,6 +252,7 @@ async function processUpload(file, req) {
     };
 }
 
+/*
 function sendUploadResponse(req, res, result, uploadedFile) {
     const acceptsJson = req.headers.accept && req.headers.accept.includes('application/json');
     
@@ -270,6 +271,18 @@ function sendUploadResponse(req, res, result, uploadedFile) {
     res.render('index', { 
         uploadedUrl: result.url, 
         uploadedFile: uploadedFile
+    });
+}*/
+
+function sendUploadResponse(req, res, result, uploadedFile) {
+    return res.status(200).json({
+        status: 'success',
+        url: result.url,
+        filename: result.filename,
+        originalName: uploadedFile,
+        cloudKuUrl: result.cloudKuUrl,
+        size: result.size,
+        mimetype: result.mimetype
     });
 }
 
