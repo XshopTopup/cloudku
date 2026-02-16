@@ -6,120 +6,256 @@
     <title>API Integration - CloudKu CDN</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
     <style>
-        /* ... Style CSS tetap sama seperti sebelumnya ... */
+        /* Modern Typography & Reset */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: #0b1a14;
-            background-image: radial-gradient(rgba(46, 204, 113, 0.15) 1px, transparent 1px);
-            background-size: 24px 24px;
+            background-image: radial-gradient(rgba(46, 204, 113, 0.1) 1px, transparent 1px);
+            background-size: 32px 32px;
             min-height: 100vh;
-            padding: 60px 20px;
             color: #ecf0f1;
-            line-height: 1.6;
+            line-height: 1.7;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        
-        .content-wrapper { width: 100%; max-width: 850px; margin: 0 auto; animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .header { margin-bottom: 50px; border-bottom: 1px solid rgba(46, 204, 113, 0.2); padding-bottom: 30px; text-align: center; }
-        .header h1 { color: #2ecc71; font-size: 38px; margin-bottom: 10px; font-weight: 800; }
-        .header p { color: rgba(236, 240, 241, 0.6); font-size: 18px; }
 
-        .endpoint-container { display: flex; justify-content: center; width: 100%; margin-bottom: 30px; }
-        .endpoint-badge {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(46, 204, 113, 0.1);
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(46, 204, 113, 0.3);
-            backdrop-filter: blur(5px);
+        .content-wrapper {
+            width: 100%;
+            max-width: 800px; /* Dipersempit sedikit agar lebih fokus/elegan */
+            margin: 0 auto;
+            padding: 80px 24px;
+            animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .method { background: #2ecc71; color: #0b1a14; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 14px; margin-right: 15px; }
-        code.url { color: #2ecc71; font-family: 'Fira Code', monospace; font-weight: 600; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        h2 { color: #2ecc71; margin: 40px 0 20px; font-size: 24px; border-left: 4px solid #2ecc71; padding-left: 15px; }
-        p { margin-bottom: 20px; color: rgba(236, 240, 241, 0.8); }
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
 
-        /* Style untuk Code Block & Copy Button */
-        .code-block-wrapper { position: relative; margin: 20px 0; }
-        pre {
-            background: rgba(0, 0, 0, 0.5);
-            color: #e0e0e0;
-            padding: 25px;
-            border-radius: 12px;
-            overflow-x: auto;
-            border: 1px solid rgba(46, 204, 113, 0.15);
+        .header h1 {
+            color: #2ecc71;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: rgba(236, 240, 241, 0.5);
+            font-size: 18px;
+        }
+
+        /* Endpoint Badge */
+        .endpoint-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+
+        .endpoint-badge {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .method {
+            background: #2ecc71;
+            color: #0b1a14;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 12px;
+            margin-right: 16px;
+        }
+
+        code.url {
+            color: #2ecc71;
+            font-family: 'Fira Code', monospace;
             font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Typography */
+        h2 {
+            color: #2ecc71;
+            margin: 50px 0 25px;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #2ecc71;
+            border-radius: 4px;
+        }
+
+        h3 {
+            font-size: 16px;
+            margin: 30px 0 15px;
+            color: rgba(236, 240, 241, 0.9);
+            font-weight: 600;
+        }
+
+        p { margin-bottom: 20px; color: rgba(236, 240, 241, 0.7); }
+
+        /* Code Block Design */
+        .code-block-wrapper {
+            position: relative;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #050d0a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        pre {
+            padding: 24px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 13.5px;
+            color: #bdc3c7;
         }
 
         .copy-btn {
             position: absolute;
             top: 12px;
             right: 12px;
-            background: rgba(46, 204, 113, 0.2);
-            border: 1px solid rgba(46, 204, 113, 0.3);
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.2);
             color: #2ecc71;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
+            transition: 0.2s;
+            text-transform: uppercase;
         }
-        .copy-btn:hover { background: #2ecc71; color: #0b1a14; }
+
+        .copy-btn:hover {
+            background: #2ecc71;
+            color: #0b1a14;
+        }
+
+        /* Table Style */
+        .table-container {
+            overflow-x: auto;
+            margin: 25px 0;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 25px 0;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(46, 204, 113, 0.1);
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.02);
+            text-align: left;
         }
 
-        th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(46, 204, 113, 0.05); }
-        th { background: rgba(46, 204, 113, 0.1); color: #2ecc71; font-size: 13px; text-transform: uppercase; }
+        th, td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-        .status-code { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-bottom: 10px; }
-        .status-200 { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
-        .status-400 { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+        th {
+            background: rgba(46, 204, 113, 0.05);
+            color: #2ecc71;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-        footer { margin-top: 50px; width: 100%; text-align: center; border-top: 1px solid rgba(46, 204, 113, 0.1); padding-top: 30px; }
-        .back-link { display: inline-flex; align-items: center; color: #2ecc71; text-decoration: none; font-weight: 600; transition: 0.3s; gap: 10px; margin-bottom: 20px; }
-        .back-link:hover { transform: translateX(-5px); }
+        td code {
+            color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        /* Status Badges */
+        .status-code {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 11px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .status-200 { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.2); }
+        .status-400 { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.2); }
+
+        /* Footer */
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 40px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover { opacity: 0.7; transform: translateX(-4px); }
 
         @media (max-width: 768px) {
-            .header h1 { font-size: 30px; }
-            .endpoint-badge { flex-direction: column; text-align: center; gap: 10px; }
-            .method { margin-right: 0; }
+            .header h1 { font-size: 32px; }
+            .content-wrapper { padding: 40px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="content-wrapper">
-        <header class="header">
-            <h1>API Integration</h1>
-            <p></p>
-        </header>
 
-        <div class="endpoint-container">
-            <div class="endpoint-badge">
-                <span class="method">POST</span>
-                <code class="url" id="base-url-display">loading...</code>
-            </div>
+<div class="content-wrapper">
+    <header class="header">
+        <h1>API Documentation</h1>
+        <p>Integrasikan layanan CloudKu CDN ke aplikasi Anda</p>
+    </header>
+
+    <div class="endpoint-container">
+        <div class="endpoint-badge">
+            <span class="method">POST</span>
+            <code class="url" id="base-url-display">loading...</code>
         </div>
+    </div>
 
-        <section>
-            <h2>Parameter Request</h2>
-            <p>Kirimkan file Anda menggunakan metode POST dengan format <code>multipart/form-data</code>.</p>
+    <section>
+        <h2>Parameter Request</h2>
+        <p>Gunakan endpoint ini untuk mengunggah aset dengan format <code>multipart/form-data</code>.</p>
+        <div class="table-container">
             <table>
                 <thead>
                     <tr>
@@ -134,19 +270,20 @@
                         <td><code>file</code></td>
                         <td>Binary</td>
                         <td>Ya</td>
-                        <td>File gambar, dokumen, atau video (Maks 200MB).</td>
+                        <td>Max file size: 200MB</td>
                     </tr>
                 </tbody>
             </table>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>Contoh Implementasi</h2>
-            
-            <h3>JavaScript</h3>
-            <div class="code-block-wrapper">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <pre><code id="js-code">const formData = new FormData();
+    <section>
+        <h2>Contoh Implementasi</h2>
+        
+        <h3>JavaScript (Fetch)</h3>
+        <div class="code-block-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code id="js-code">const formData = new FormData();
 formData.append('file', fileInput.files[0]);
 
 fetch('[BASE_URL]/cdn/api.php', {
@@ -155,83 +292,93 @@ fetch('[BASE_URL]/cdn/api.php', {
 })
 .then(res => res.json())
 .then(data => console.log(data));</code></pre>
-            </div>
+        </div>
 
-            <h3>PHP (cURL)</h3>
-            <div class="code-block-wrapper">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <pre><code id="php-code">$file = new CURLFile('image.jpg');
+        <h3>PHP (cURL)</h3>
+        <div class="code-block-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code id="php-code">$file = new CURLFile('image.jpg');
 $ch = curl_init('[BASE_URL]/cdn/api.php');
+
 curl_setopt($ch, CURLOPT_POSTFIELDS, ['file' => $file]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
 $response = curl_exec($ch);
 echo $response;</code></pre>
-            </div>
-        </section>
+        </div>
+    </section>
 
-        <section>
-            <h2>Respon Server</h2>
-            
-            <span class="status-code status-200">200 OK - Success</span>
-            <div class="code-block-wrapper">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <pre><code>{
+    <section>
+        <h2>Respon Server</h2>
+        
+        <span class="status-code status-200">Success Response</span>
+        <div class="code-block-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>{
   "status": "success",
   "url": "[BASE_URL]/f/custom123.jpg",
   "filename": "custom123.jpg",
   "originalName": "foto.jpg"
 }</code></pre>
-            </div>
+        </div>
 
-            <span class="status-code status-400">400 Error - Failed</span>
-            <div class="code-block-wrapper">
-                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                <pre><code>{
+        <span class="status-code status-400">Error Response</span>
+        <div class="code-block-wrapper">
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            <pre><code>{
   "status": "error",
   "message": "Upload limit exceeded (200MB max)"
 }</code></pre>
-            </div>
-        </section>
+        </div>
+    </section>
 
-        <footer>
-            <a href="/" class="back-link">
-                <span>←</span> Kembali ke Dashboard
-            </a>
-            <p style="font-size: 13px; color: rgba(236, 240, 241, 0.3);">
-                Dokumentasi API CloudKu CDN
-            </p>
-        </footer>
-    </div>
+    <footer>
+        <a href="/" class="back-link">
+            <span>←</span> Kembali ke Dashboard
+        </a>
+        <p style="font-size: 12px; color: rgba(236, 240, 241, 0.2);">
+            © 2026 CloudKu CDN • Developer Tools
+        </p>
+    </footer>
+</div>
 
-    <script>
-        // Deteksi domain otomatis
-        const currentOrigin = window.location.origin;
-        const apiPath = "/cdn/api.php";
-        
-        // Update tampilan URL utama
-        document.getElementById('base-url-display').innerText = currentOrigin + apiPath;
+<script>
+    // Logic deteksi domain tetap dipertahankan
+    const currentOrigin = window.location.origin;
+    const apiPath = "/cdn/api.php";
 
-        // Ganti semua placeholder [BASE_URL] di dalam halaman
-        document.body.innerHTML = document.body.innerHTML.replace(/\[BASE_URL\]/g, currentOrigin);
-
-        // Fungsi Copy Code
-        function copyCode(button) {
-            const pre = button.nextElementSibling;
-            const text = pre.innerText;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = button.innerText;
-                button.innerText = "Copied!";
-                button.style.background = "#2ecc71";
-                button.style.color = "#0b1a14";
-                
-                setTimeout(() => {
-                    button.innerText = originalText;
-                    button.style.background = "rgba(46, 204, 113, 0.2)";
-                    button.style.color = "#2ecc71";
-                }, 2000);
-            });
+    document.getElementById('base-url-display').innerText = currentOrigin + apiPath;
+    
+    // Gunakan cara yang lebih aman untuk replace placeholder tanpa merusak event listener
+    const replacePlaceholder = () => {
+        const walkers = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while(node = walkers.nextNode()) {
+            if (node.nodeValue.includes('[BASE_URL]')) {
+                node.nodeValue = node.nodeValue.replace(/\[BASE_URL\]/g, currentOrigin);
+            }
         }
-    </script>
+    };
+    replacePlaceholder();
+
+    // Fungsi Copy Code fungsional
+    function copyCode(button) {
+        const pre = button.nextElementSibling;
+        const text = pre.innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.innerText;
+            button.innerText = "Copied!";
+            button.style.background = "#2ecc71";
+            button.style.color = "#0b1a14";
+            
+            setTimeout(() => {
+                button.innerText = originalText;
+                button.style.background = "rgba(46, 204, 113, 0.1)";
+                button.style.color = "#2ecc71";
+            }, 2000);
+        });
+    }
+</script>
 </body>
 </html>
