@@ -409,37 +409,50 @@
                 }
             });
             
-            // Upload complete
+            // Upload complete (PERBAIKAN DILAKUKAN DI BLOK INI)
             xhr.addEventListener('load', () => {
-                if (xhr.status === 200) {
+                if (xhr.status === 200 || xhr.status === 201) {
                     try {
                         const response = JSON.parse(xhr.responseText);
                         console.log('Server response:', response);
                         
-                        if (response.status === 'success' && response.url) {
-                            // Tampilkan hasil
+                        // Ekstraksi URL yang lebih dinamis dari response backend (Express)
+                        const fileUrl = response.url || response.fileUrl || response.secure_url || (response.data && response.data.url);
+                        
+                        if (fileUrl) {
                             progressStatus.textContent = '✅ Upload berhasil!';
                             
                             setTimeout(() => {
                                 showResult({
-                                    filename: response.filename,
-                                    originalName: response.originalName,
-                                    url: response.url
+                                    filename: response.filename || response.originalName || file.name,
+                                    url: fileUrl
                                 });
                                 showToast('Upload berhasil!', 'success');
                             }, 500);
                         } else {
-                            throw new Error(response.message || 'Response tidak valid');
+                            throw new Error(response.message || 'URL gagal diekstrak dari respon server');
                         }
                     } catch (e) {
                         console.error('Parse error:', e);
                         console.log('Response text:', xhr.responseText);
                         
-                        // Jika bukan JSON, mungkin HTML response
-                        showToast('Upload berhasil! Memuat ulang...', 'success');
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
+                        // Fallback: Jika server merespon dengan plain text berisi URL
+                        if (xhr.responseText && xhr.responseText.trim().startsWith('http')) {
+                            progressStatus.textContent = '✅ Upload berhasil!';
+                            setTimeout(() => {
+                                showResult({
+                                    filename: file.name,
+                                    url: xhr.responseText.trim()
+                                });
+                                showToast('Upload berhasil!', 'success');
+                            }, 500);
+                        } else {
+                            // Hanya refresh halaman jika benar-benar gagal mendapatkan URL
+                            showToast('Upload diproses! Memuat ulang...', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        }
                     }
                 } else {
                     showToast('Error Server (' + xhr.status + ')', 'error');
