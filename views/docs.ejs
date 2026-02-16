@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - CloudKu CDN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #667eea;
+            margin: 30px 0 15px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        h3 {
+            color: #764ba2;
+            margin: 20px 0 10px;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+        }
+        .endpoint {
+            background: #f0f9ff;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .method {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📖 API Documentation</h1>
+        <p>Dokumentasi lengkap untuk menggunakan CloudKu CDN Uploader API</p>
+
+        <h2>🚀 Upload File</h2>
+        <div class="endpoint">
+            <span class="method">POST</span>
+            <code>/cdn/api.php</code>
+        </div>
+
+        <h3>Request</h3>
+        <p><strong>Content-Type:</strong> multipart/form-data</p>
+        <p><strong>Body Parameters:</strong></p>
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>file</td>
+                <td>File</td>
+                <td>Yes</td>
+                <td>File yang akan diupload (max 200MB)</td>
+            </tr>
+        </table>
+
+        <h3>cURL Example</h3>
+        <pre><code>curl -X POST http://localhost:3000/cdn/api.php \
+  -F "file=@/path/to/your/file.png"</code></pre>
+
+        <h3>JavaScript Example</h3>
+        <pre><code>const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+
+const response = await fetch('/cdn/api.php', {
+  method: 'POST',
+  body: formData
+});
+
+const result = await response.json();
+console.log(result);</code></pre>
+
+        <h3>Success Response (200)</h3>
+        <pre><code>{
+  "status": "success",
+  "url": "http://localhost:3000/f/abc123.jpg",
+  "cloudKuUrl": "https://domain-kamu.com/f/xyz789.jpg",
+  "filename": "abc123.jpg",
+  "originalName": "foto_liburan.jpg"
+}</code></pre>
+
+        <h3>Error Responses</h3>
+        <p><strong>400 Bad Request - No file provided</strong></p>
+        <pre><code>{
+  "status": "error",
+  "message": "No file provided"
+}</code></pre>
+
+        <p><strong>400 Bad Request - File too large</strong></p>
+        <pre><code>{
+  "status": "error",
+  "message": "Upload limit exceeded (200MB max)"
+}</code></pre>
+
+        <p><strong>500 Internal Server Error</strong></p>
+        <pre><code>{
+  "status": "error",
+  "message": "CloudKu CDN upload failed: [Error message]"
+}</code></pre>
+
+        <h2>📁 Get File Info</h2>
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <code>/api/file/:filename</code>
+        </div>
+
+        <h3>Success Response (200)</h3>
+        <pre><code>{
+  "status": "success",
+  "data": {
+    "filename": "abc123.jpg",
+    "originalName": "foto_liburan.jpg",
+    "size": 1048576,
+    "mimetype": "image/jpeg",
+    "uploadDate": "2024-01-15 10:30:00",
+    "publicUrl": "http://localhost:3000/f/abc123.jpg",
+    "cloudKuUrl": "https://domain-kamu.com/f/xyz789.jpg"
+  }
+}</code></pre>
+
+        <h2>🗑️ Delete File</h2>
+        <div class="endpoint">
+            <span class="method">DELETE</span>
+            <code>/api/file/:filename</code>
+        </div>
+
+        <h3>Success Response (200)</h3>
+        <pre><code>{
+  "status": "success",
+  "message": "File deleted successfully"
+}</code></pre>
+
+        <h2>🔗 Access File</h2>
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <code>/f/:filename</code>
+        </div>
+        <p>Akses file langsung melalui URL custom domain Anda. File akan di-proxy dari CloudKu CDN.</p>
+
+        <h3>Example</h3>
+        <pre><code>http://localhost:3000/f/abc123.jpg</code></pre>
+
+        <a href="/" class="back-link">← Kembali ke Home</a>
+    </div>
+</body>
+</html>
