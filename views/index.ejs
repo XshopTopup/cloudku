@@ -14,8 +14,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Mengubah background menjadi Hijau Dongker dengan pola dot grid halus */
-            background-color: #0b1a14; /* Hijau dongker gelap */
+            background-color: #0b1a14;
             background-image: radial-gradient(rgba(46, 204, 113, 0.15) 1px, transparent 1px);
             background-size: 24px 24px;
             min-height: 100vh;
@@ -23,7 +22,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
-            color: #ecf0f1; /* Teks utama menjadi terang agar elegan */
+            color: #ecf0f1;
         }
         
         .container {
@@ -44,7 +43,7 @@
         }
         
         .header h1 {
-            color: #2ecc71; /* Aksen hijau cerah namun profesional */
+            color: #2ecc71;
             margin-bottom: 10px;
             font-size: 42px;
             display: flex;
@@ -62,7 +61,6 @@
         }
         
         .upload-area {
-            /* Desain box transparan gelap (glassmorphism ringan) */
             border: 2px dashed rgba(46, 204, 113, 0.4);
             border-radius: 16px;
             padding: 80px 30px;
@@ -143,7 +141,6 @@
         
         .progress-status { margin-top: 10px; text-align: center; color: #2ecc71; font-size: 14px; }
         
-        /* Tombol Button Profesional */
         .btn {
             background: #2ecc71;
             color: #0b1a14;
@@ -255,7 +252,7 @@
     <div class="container">
         <div class="header">
             <h1>CloudKu CDN</h1>
-            <p>File Diupload Secara Permanen</p>
+            <p>Upload File Profesional & Elegan</p>
         </div>
         
         <form id="uploadForm" enctype="multipart/form-data">
@@ -275,16 +272,16 @@
                 <div class="progress-bar-wrapper">
                     <div class="progress-bar" id="progressBar">0%</div>
                 </div>
-                <div class="progress-status" id="progressStatus">Ready...</div>
+                <div class="progress-status" id="progressStatus">Ready to upload...</div>
             </div>
             
             <button type="submit" class="btn" id="uploadBtn">
-                <span id="btnText">Upload File Ke CloudKu</span>
+                <span id="btnText">Upload File Sekarang</span>
             </button>
         </form>
 
         <div class="result" id="resultContainer">
-            <h3>✅ Upload Berhasil!</h3>
+            <h3>✅ Berhasil Diunggah!</h3>
             <div class="result-info">
                 <div class="result-label">File Name</div>
                 <div class="result-value" id="resFileName">-</div>
@@ -294,21 +291,20 @@
                 <button class="copy-btn" id="copyBtn">Copy</button>
             </div>
             <div class="action-buttons">
-                <a href="#" id="viewFileBtn" target="_blank" class="action-btn">View File</a>
-                <button onclick="location.reload()" class="action-btn">Upload Another</button>
+                <a href="#" id="viewFileBtn" target="_blank" class="action-btn">Lihat File</a>
+                <button onclick="location.reload()" class="action-btn">Upload Lagi</button>
             </div>
         </div>
         
         <div class="footer">
             <a href="/docs" class="footer-link">📖 API Documentation</a>
-            <div class="footer-text">© CloudKu CDN Uploader All Files</div>
+            <div class="footer-text">© 2026 CloudKu CDN • Developed with Arsyilla AI</div>
         </div>
     </div>
     
     <div class="toast" id="toast"></div>
 
     <script>
-        // Logika JavaScript tetap dipertahankan sesuai struktur fungsional Anda
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const uploadForm = document.getElementById('uploadForm');
@@ -360,36 +356,49 @@
             btnText.textContent = 'Uploading...';
             progressContainer.classList.add('show');
             
-            try {
-                const xhr = new XMLHttpRequest();
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        const percent = Math.round((e.loaded / e.total) * 100);
-                        progressBar.style.width = percent + '%';
-                        progressBar.textContent = percent + '%';
-                        progressStatus.textContent = 'Mengunggah ke CloudKu CDN...';
-                    }
-                });
-                
-                xhr.addEventListener('load', () => {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        if (xhr.status === 200 && response.status === 'success') {
-                            showResult(response.data);
-                            showToast('Berhasil!', 'success');
-                        } else {
-                            showToast('Gagal: ' + (response.message || 'Error server'), 'error');
+            const xhr = new XMLHttpRequest();
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressBar.textContent = percent + '%';
+                    progressStatus.textContent = 'Mengunggah ke server...';
+                }
+            });
+            
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    // Cek jika status sukses (200)
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.status === 'success') {
+                                showResult(response.data);
+                                showToast('Berhasil!', 'success');
+                            } else {
+                                throw new Error(response.message || 'Server menolak request');
+                            }
+                        } catch (err) {
+                            showToast('Gagal memproses data server: ' + err.message, 'error');
+                            console.error('Parsing Error:', xhr.responseText);
                             resetForm();
                         }
-                    } catch (err) {
-                        showToast('Error parsing response', 'error');
+                    } else {
+                        // Jika status bukan 200 (error 404, 500, dll)
+                        showToast('Error Server (' + xhr.status + ')', 'error');
                         resetForm();
                     }
-                });
-                
-                xhr.open('POST', '/upload');
-                xhr.send(formData);
-            } catch (error) { showToast('Terjadi kesalahan!', 'error'); resetForm(); }
+                }
+            };
+            
+            xhr.onerror = function() {
+                showToast('Koneksi terputus atau gagal!', 'error');
+                resetForm();
+            };
+            
+            xhr.open('POST', '/upload', true);
+            xhr.send(formData);
         });
 
         function showResult(data) {
@@ -404,7 +413,7 @@
 
         function resetForm() {
             uploadBtn.disabled = false;
-            btnText.textContent = 'Upload File Ke Cloud';
+            btnText.textContent = 'Upload File Sekarang';
             progressContainer.classList.remove('show');
         }
 
@@ -419,7 +428,7 @@
             toast.textContent = message;
             toast.style.background = type === 'success' ? '#2ecc71' : '#e74c3c';
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            setTimeout(() => toast.classList.remove('show'), 4000);
         }
     </script>
 </body>
