@@ -24,7 +24,7 @@ npm install @xstbot/cloudku
 ## 🛠️ Cara Penggunaan
 
 ### JavaScript (CommonJS)
-\`\`\`javascript
+```javascript
 const { CloudKu } = require('@xstbot/cloudku');
 const fs = require('fs');
 
@@ -44,7 +44,7 @@ async function CloudKu() {
 }
 
 CloudKu();
-\`\`\`
+```
 
 ## 📋 Fitur Utama
 - **Ringan & Cepat**: Tanpa dependensi berat.
