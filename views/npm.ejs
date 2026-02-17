@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation | @xstbot/cloudku</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #2ecc71;
+            --bg: #0b1a14;
+            --text-main: #ecf0f1;
+            --text-dim: rgba(236, 240, 241, 0.5);
+            --border: rgba(46, 204, 113, 0.15);
+            --code-bg: rgba(0, 0, 0, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(rgba(46, 204, 113, 0.08) 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: var(--text-main);
+            line-height: 1.7;
+            padding: 100px 24px;
+            text-align: center; /* Membuat teks default rata tengah */
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER */
+        header { margin-bottom: 80px; }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 16px;
+            background: rgba(46, 204, 113, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            color: var(--brand);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 64px); /* Ukuran font responsif */
+            font-weight: 800;
+            letter-spacing: -3px;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: var(--text-dim);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* SECTIONING */
+        section { 
+            margin-bottom: 100px; 
+            text-align: left; /* Mengembalikan teks konten ke kiri agar rapi saat dibaca */
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            justify-content: center; /* Rata tengah icon/label jika ada */
+            color: var(--brand);
+        }
+
+        .section-desc {
+            text-align: center;
+            margin-bottom: 24px;
+            color: var(--text-dim);
+        }
+
+        /* CODE USAGE STYLES */
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--code-bg);
+            padding: 14px 24px;
+            border-radius: 14px 14px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+        }
+
+        .lang-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brand);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .copy-btn:hover { background: var(--brand); color: var(--bg); }
+
+        pre {
+            background: var(--code-bg);
+            padding: 28px;
+            border-radius: 0 0 14px 14px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            margin-bottom: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: #d1d5db;
+        }
+
+        /* TABLES */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--code-bg);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(46, 204, 113, 0.08);
+            text-align: left;
+            padding: 18px;
+            color: var(--brand);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        td {
+            padding: 20px 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .type { color: #3498db; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+        /* FOOTER */
+        footer {
+            margin-top: 120px;
+            padding: 60px 0;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--brand);
+            font-weight: 700;
+            font-size: 15px;
+            transition: 0.3s;
+            border-bottom: 1px dashed var(--brand);
+            padding-bottom: 2px;
+        }
+
+        .back-link:hover { opacity: 0.6; }
+
+        .credit { font-size: 12px; color: var(--text-dim); letter-spacing: 0.5px; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="badge">v1.0.0 — STABLE RELEASE</span>
+        <h1>@xstbot/cloudku</h1>
+        <p class="tagline">CloudKu Official SDK. Solusi integrasi CDN yang cepat, aman, dan dirancang khusus untuk pengembang modern.</p>
+    </header>
+
+    <section id="install">
+        <div class="section-header">
+            <h2>Quick Installation</h2>
+            <p class="section-desc">Mulai dalam hitungan detik dengan memasang library via NPM.</p>
+        </div>
+        <div class="code-header">
+            <span class="lang-label">Terminal</span>
+            <button class="copy-btn" onclick="copy('code-install')">Copy</button>
+        </div>
+        <pre><code id="code-install">npm install @xstbot/cloudku</code></pre>
+    </section>
+
+    <section id="usage-js">
+        <div class="section-header">
+            <h2>JavaScript Integration</h2>
+            <p class="section-desc">Gunakan CommonJS untuk integrasi cepat pada proyek Node.js atau Express.</p>
+        </div>
+        <div class="code-header">
+            <span class="lang-label">Node.js / Express</span>
+            <button class="copy-btn" onclick="copy('code-js')">Copy</button>
+        </div>
+<pre><code id="code-js">const { CloudKu } = require('@xstbot/cloudku');
+
+/**
+ * Fungsi untuk menangani upload file
+ * @param {Buffer} fileBuffer - Data buffer dari file
+ * @param {String} fileName - Nama file yang diinginkan
+ */
+async function handleFileUpload(fileBuffer, fileName) {
+  try {
+    const result = await CloudKu(fileBuffer, fileName);
+    
+    if (result.status === 'success') {
+      console.log('File Berhasil Diunggah:', result.url);
+    } else {
+      console.error('API Error:', result.message);
+    }
+  } catch (err) {
+    console.error('System Error:', err.message);
+  }
+}</code></pre>
+    </section>
+
+    <section id="usage-ts">
+        <div class="section-header">
+            <h2>TypeScript Implementation</h2>
+            <p class="section-desc">Dukungan penuh tipe data untuk pengalaman pengembangan yang lebih aman.</p>
+        </div>
+        <div class="code-header">
+            <span class="lang-label">TypeScript</span>
+            <button class="copy-btn" onclick="copy('code-ts')">Copy</button>
+        </div>
+<pre><code id="code-ts">import { CloudKu, CloudKuResponse } from '@xstbot/cloudku';
+
+const uploadToCDN = async (buffer: Buffer, name: string): Promise&lt;void&gt; => {
+  const response: CloudKuResponse = await CloudKu(buffer, name);
+  
+  if (response.status === 'success') {
+    // Properti 'url' sudah terdefinisi secara otomatis
+    process.stdout.write(`File live at: ${response.url}`);
+  }
+};</code></pre>
+    </section>
+
+    <section id="schema">
+        <div class="section-header">
+            <h2>Response Schema</h2>
+            <p class="section-desc">Struktur data yang dikembalikan oleh setiap permintaan API.</p>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 700; color: #fff;">status</td>
+                        <td class="type">string</td>
+                        <td>Mengembalikan "success" atau "error"</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: #fff;">message</td>
+                        <td class="type">string</td>
+                        <td>Detail pesan respon atau informasi error</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; color: #fff;">url</td>
+                        <td class="type">string | undefined</td>
+                        <td>URL publik permanen (jika status sukses)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>
+        <div>
+            <a href="/" class="back-link">← Kembali ke CloudKu Uploader</a>
+        </div>
+        <span class="credit">© 2026 CloudKu CDN API • Developed for Modern Apps</span>
+    </footer>
+</div>
+
+<script>
+    function copy(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text);
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = originalText, 2000);
+    }
+</script>
+
+</body>
+</html>
