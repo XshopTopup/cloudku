@@ -8,7 +8,7 @@
     <style>
         /* Modern Typography & Reset */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
-
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -26,7 +26,7 @@
 
         .content-wrapper {
             width: 100%;
-            max-width: 800px; /* Dipersempit sedikit agar lebih fokus/elegan */
+            max-width: 800px;
             margin: 0 auto;
             padding: 80px 24px;
             animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -40,7 +40,7 @@
         /* Header Section */
         .header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
 
         .header h1 {
@@ -55,6 +55,56 @@
             color: rgba(236, 240, 241, 0.5);
             font-size: 18px;
         }
+
+        /* Profesional NPM Button */
+        .npm-promo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+
+        .npm-btn {
+            position: relative;
+            background: rgba(46, 204, 113, 0.03);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .npm-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(46, 204, 113, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .npm-btn:hover::before { left: 100%; }
+
+        .npm-btn:hover {
+            background: rgba(46, 204, 113, 0.1);
+            border-color: #2ecc71;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(46, 204, 113, 0.15);
+            color: #fff;
+        }
+
+        .npm-btn svg { transition: transform 0.3s ease; }
+        .npm-btn:hover svg { transform: scale(1.1) rotate(-5deg); }
 
         /* Endpoint Badge */
         .endpoint-container {
@@ -152,10 +202,7 @@
             text-transform: uppercase;
         }
 
-        .copy-btn:hover {
-            background: #2ecc71;
-            color: #0b1a14;
-        }
+        .copy-btn:hover { background: #2ecc71; color: #0b1a14; }
 
         /* Table Style */
         .table-container {
@@ -172,10 +219,7 @@
             text-align: left;
         }
 
-        th, td {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        th, td { padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
         th {
             background: rgba(46, 204, 113, 0.05);
@@ -209,7 +253,7 @@
         .status-200 { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.2); }
         .status-400 { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.2); }
 
-        /* Footer */
+        /* Footer Nav */
         footer {
             margin-top: 80px;
             text-align: center;
@@ -217,7 +261,14 @@
             padding-top: 40px;
         }
 
-        .back-link {
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .footer-link {
             display: inline-flex;
             align-items: center;
             color: #2ecc71;
@@ -226,14 +277,14 @@
             font-size: 14px;
             transition: 0.3s;
             gap: 8px;
-            margin-bottom: 20px;
         }
 
-        .back-link:hover { opacity: 0.7; transform: translateX(-4px); }
+        .footer-link:hover { opacity: 0.7; }
 
         @media (max-width: 768px) {
             .header h1 { font-size: 32px; }
             .content-wrapper { padding: 40px 20px; }
+            .nav-links { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
@@ -244,6 +295,18 @@
         <h1>API Documentation</h1>
         <p>Integrasikan layanan CloudKu CDN ke aplikasi Anda</p>
     </header>
+
+    <div class="npm-promo">
+        <a href="/npm" class="npm-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>Integrasi SDK via NPM (@xstbot/cloudku)</span>
+        </a>
+    </div>
 
     <div class="endpoint-container">
         <div class="endpoint-badge">
@@ -279,7 +342,6 @@
 
     <section>
         <h2>Contoh Implementasi</h2>
-        
         <h3>JavaScript (Fetch)</h3>
         <div class="code-block-wrapper">
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -287,8 +349,8 @@
 formData.append('file', fileInput.files[0]);
 
 fetch('[BASE_URL]/cdn/api.php', {
-    method: 'POST',
-    body: formData
+  method: 'POST',
+  body: formData
 })
 .then(res => res.json())
 .then(data => console.log(data));</code></pre>
@@ -299,10 +361,8 @@ fetch('[BASE_URL]/cdn/api.php', {
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
             <pre><code id="php-code">$file = new CURLFile('image.jpg');
 $ch = curl_init('[BASE_URL]/cdn/api.php');
-
 curl_setopt($ch, CURLOPT_POSTFIELDS, ['file' => $file]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
 $response = curl_exec($ch);
 echo $response;</code></pre>
         </div>
@@ -310,7 +370,6 @@ echo $response;</code></pre>
 
     <section>
         <h2>Respon Server</h2>
-        
         <span class="status-code status-200">Success Response</span>
         <div class="code-block-wrapper">
             <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -333,9 +392,10 @@ echo $response;</code></pre>
     </section>
 
     <footer>
-        <a href="/" class="back-link">
-            <span>←</span> Kembali ke Dashboard
-        </a>
+        <div class="nav-links">
+            <a href="/" class="footer-link">← Dashboard</a>
+            <a href="/npm" class="footer-link">📦 NPM Documentation</a>
+        </div>
         <p style="font-size: 12px; color: rgba(236, 240, 241, 0.2);">
             © 2026 CloudKu CDN • Developer Tools
         </p>
@@ -343,13 +403,10 @@ echo $response;</code></pre>
 </div>
 
 <script>
-    // Logic deteksi domain tetap dipertahankan
     const currentOrigin = window.location.origin;
     const apiPath = "/cdn/api.php";
-
     document.getElementById('base-url-display').innerText = currentOrigin + apiPath;
-    
-    // Gunakan cara yang lebih aman untuk replace placeholder tanpa merusak event listener
+
     const replacePlaceholder = () => {
         const walkers = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
         let node;
@@ -361,17 +418,14 @@ echo $response;</code></pre>
     };
     replacePlaceholder();
 
-    // Fungsi Copy Code fungsional
     function copyCode(button) {
         const pre = button.nextElementSibling;
         const text = pre.innerText;
-        
         navigator.clipboard.writeText(text).then(() => {
             const originalText = button.innerText;
             button.innerText = "Copied!";
             button.style.background = "#2ecc71";
             button.style.color = "#0b1a14";
-            
             setTimeout(() => {
                 button.innerText = originalText;
                 button.style.background = "rgba(46, 204, 113, 0.1)";
