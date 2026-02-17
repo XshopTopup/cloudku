@@ -95,6 +95,10 @@ app.get('/docs', (req, res) => {
     res.render('docs');
 });
 
+app.get('/npm', (req, res) => {
+    res.render('npm');
+});
+
 // Route: Serve File dengan URL Custom Domain
 app.get('/f/:filename', async (req, res) => {
     const db = getDB();
